@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="zephyr.ALHR.fragments.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/navigation_dashboard"
+        android:name="zephyr.ALHR.fragments.DashboardFragment"
+        android:label="@string/title_dashboard"
+        tools:layout="@layout/fragment_dashboard" >
+        <action
+            android:id="@+id/createAnimalRecord"
+            app:destination="@id/navigation_creator" />
+        <action
+            android:id="@+id/toAnimalViewer"
+            app:destination="@id/navigation_animal_viewer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="zephyr.ALHR.fragments.SettingsFragment"
+        android:label="@string/title_settings"
+        tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/navigation_creator"
+        android:name="zephyr.ALHR.fragments.RecordCreatorFragment"
+        android:label="fragment_record_creator"
+        tools:layout="@layout/fragment_record_creator" />
+    <fragment
+        android:id="@+id/navigation_animal_viewer"
+        android:name="zephyr.ALHR.fragments.AnimalViewer"
+        android:label="fragment_animal_viewer"
+        tools:layout="@layout/fragment_animal_viewer" >
+        <argument
+            android:name="position"
+            app:argType="integer"
+            android:defaultValue='0' />
+    </fragment>
+</navigation>
