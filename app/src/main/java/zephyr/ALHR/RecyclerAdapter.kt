@@ -8,8 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 
-class Adapter(var lama: List<Lama>, val selectListener: (position:Int) -> Unit) :
-    RecyclerView.Adapter<Adapter.ViewHolder>() {
+class RecyclerAdapter(var lama: List<Lama>, val selectListener: (position:Int) -> Unit) :
+    RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(parent.context)
@@ -23,9 +23,8 @@ class Adapter(var lama: List<Lama>, val selectListener: (position:Int) -> Unit) 
         val item = lama[position]
         holder.bind(item)
 
-        holder.itemView.setOnLongClickListener{
+        holder.itemView.setOnClickListener{
             selectListener(position)
-            true
         }
     }
 

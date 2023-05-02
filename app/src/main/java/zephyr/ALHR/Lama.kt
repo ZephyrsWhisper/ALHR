@@ -12,7 +12,6 @@ class Lama(var properName: String?,
 
     @SerialName("Age")
     var age:String? = ""
-    @SerialName("ILR")
     var ILRNum:String? = "123"
     var ARINum:String? = ""
     var microchipNum:String? = ""

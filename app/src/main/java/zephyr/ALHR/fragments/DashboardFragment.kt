@@ -1,29 +1,27 @@
 package zephyr.ALHR.fragments
 
 import android.annotation.SuppressLint
+import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
-import androidx.core.view.marginTop
+import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
-import zephyr.ALHR.Adapter
-import zephyr.ALHR.Lama
+import zephyr.ALHR.RecyclerAdapter
 import zephyr.ALHR.R
 import zephyr.ALHR.SharedViewModel
 import zephyr.ALHR.databinding.FragmentDashboardBinding
+
 
 class DashboardFragment : Fragment() {
 
@@ -40,6 +38,7 @@ class DashboardFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -74,19 +73,17 @@ class DashboardFragment : Fragment() {
 
         //Recycler View Setup Section
         val recycler = view.findViewById<RecyclerView>(R.id.animal_selector)
-        val myAdapter = Adapter(sharedViewModel.lamaList){ p:Int ->
+        val myRecyclerAdapter = RecyclerAdapter(sharedViewModel.lamaList){ p:Int ->
             val bundle = Bundle()
             bundle.putInt("infoPos", p)
             navCtrl.navigate(R.id.toAnimalViewer, bundle)
         }
-        recycler.adapter = myAdapter
+        recycler.adapter = myRecyclerAdapter
         recycler.layoutManager = LinearLayoutManager(requireContext())
 
+
         //This handles the swipe delete
-        val swipeToDeleteCallback = object : ItemTouchHelper.SimpleCallback(
-            0 /* ignore row drag */,
-            ItemTouchHelper.RIGHT /* handle write swipe only */
-        ) {
+        val swipeToDeleteCallback = object : ItemTouchHelper.SimpleCallback(0 , ItemTouchHelper.LEFT) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -99,21 +96,8 @@ class DashboardFragment : Fragment() {
             @SuppressLint("NotifyDataSetChanged")
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                val msg = "Are you sure you want to delete ${sharedViewModel.lamaList[position].barnName}?"
-                val tempLama = sharedViewModel.lamaList[position]
-                sharedViewModel.removeAnimal(position)
-                recycler.adapter?.notifyItemRemoved(position)
-                sharedViewModel.saveAnimalDataToFile(requireContext())
-
-                Snackbar.make(viewHolder.itemView, msg, 5000)
-                    .setAction("No") {
-                        sharedViewModel.lamaList.add(position, tempLama)
-                        recycler.adapter?.notifyDataSetChanged()
-                        sharedViewModel.saveAnimalDataToFile(requireContext())
-                    }
-                    .show()
+                deleteDialog(requireContext(), position, sharedViewModel, recycler)
             }
-
         }
         val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
         itemTouchHelper.attachToRecyclerView(recycler)
@@ -123,15 +107,47 @@ class DashboardFragment : Fragment() {
             sharedViewModel.sortBySpecies()
             recycler.adapter?.notifyDataSetChanged()
         }
-
-
-
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun deleteDialog(context: Context, position: Int, vm:SharedViewModel, recycler: RecyclerView){
+        val tempLama = vm.lamaList[position]
+        val dialog = Dialog(context, R.style.CustomAlertDialog)
+
+        dialog.setContentView(R.layout.confirmation_popup)
+        val displayMetrics = context.resources.displayMetrics
+
+        val width = (displayMetrics.widthPixels * 0.8).toInt()
+        dialog.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        // Set the text of the title TextView
+        val titleTextView = dialog.findViewById<TextView>(R.id.popup_title)
+        titleTextView.text = "Are you sure you want to delete this item?"
+        vm.removeAnimal(position)
+        recycler.adapter?.notifyItemRemoved(position)
+        vm.saveAnimalDataToFile(context)
+
+        // Set click listeners for the Cancel and Confirm buttons
+        val cancelButton = dialog.findViewById<Button>(R.id.popup_cancel_button)
+        cancelButton.setOnClickListener {
+            vm.lamaList.add(position, tempLama)
+            recycler.adapter?.notifyDataSetChanged()
+            vm.saveAnimalDataToFile(context)
+            dialog.dismiss()
+        }
+
+        val confirmButton = dialog.findViewById<Button>(R.id.popup_confirm_button)
+        confirmButton.setOnClickListener {
+
+            dialog.dismiss()
+        }
+
+
+        dialog.show()
     }
 
 }

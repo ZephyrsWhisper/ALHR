@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@id/navigation_home">
 
     <fragment
         android:id="@+id/navigation_home"
@@ -44,4 +44,14 @@
             app:argType="integer"
             android:defaultValue='0' />
     </fragment>
+    <fragment
+        android:id="@+id/navigation_health_recorder"
+        android:name="zephyr.ALHR.fragments.HealthRecorderFragment"
+        android:label="fragment_health_recorder"
+        tools:layout="@layout/fragment_health_recorder" />
+    <fragment
+        android:id="@+id/viewPagerFragment"
+        android:name="zephyr.ALHR.fragments.ViewPagerFragment"
+        android:label="fragment_view_pager"
+        tools:layout="@layout/fragment_view_pager" />
 </navigation>

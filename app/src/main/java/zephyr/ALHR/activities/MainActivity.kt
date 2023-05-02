@@ -1,43 +1,37 @@
 package zephyr.ALHR.activities
 
-import android.content.ContentValues
-import android.content.Context
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
+import android.view.View
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import zephyr.ALHR.R
 import zephyr.ALHR.SharedViewModel
 import zephyr.ALHR.databinding.ActivityMainBinding
-import java.io.OutputStreamWriter
+import zephyr.ALHR.fragments.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
-
-
+    @SuppressLint("AppCompatMethod")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.activity_main)
         actionBar?.hide()
-        val navView: BottomNavigationView = binding.navView
         val sharedViewModel = ViewModelProvider(this)[SharedViewModel::class.java]
-        //This is a test section for the shared viewModel
         sharedViewModel.updateAnimalList(this)
-        val navController = findNavController(R.id.nav_host_fragment_activity_main)
-
-        navView.setupWithNavController(navController)
+        val navView: BottomNavigationView = findViewById(R.id.nav_view)
+        navView.setupWithNavController(findNavController(R.id.navhost))
     }
 
 
+
 }
+
 
